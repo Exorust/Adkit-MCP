@@ -56,6 +56,7 @@ uv run ad-injector
 
 # Manage Qdrant collection
 uv run ad-index create          # Create the collection
+uv run ad-index seed            # Add sample ads for testing
 uv run ad-index info            # Show collection info
 uv run ad-index delete          # Delete the collection
 ```
@@ -64,7 +65,10 @@ uv run ad-index delete          # Delete the collection
 
 ```bash
 uv run python -m ad_injector.cli create
+uv run python -m ad_injector.cli seed
 ```
+
+**Note**: The `seed` command adds 5 sample ads to the collection covering different topics (technology, education, e-commerce, fitness, and finance). This is useful for testing and demonstration purposes. Run `create` first to set up the collection, then `seed` to add test data.
 
 ### Add Dependencies
 
