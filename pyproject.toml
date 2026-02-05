@@ -1,0 +1,21 @@
+[project]
+name = "ad-injector"
+version = "0.1.0"
+description = "Ad injector application"
+requires-python = ">=3.10,<3.11"
+dependencies = [
+    "pydantic>=2.12.5",
+    "python-dotenv>=1.2.1",
+    "qdrant-client>=1.16.2",
+]
+
+[project.scripts]
+ad-injector = "ad_injector.main:main"
+ad-index = "ad_injector.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+dev-dependencies = []
