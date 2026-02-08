@@ -1,93 +1,49 @@
 """CLI commands for managing Qdrant collection."""
 
 import argparse
+import json
+import sys
+from pathlib import Path
 
 from .embedding_service import generate_embedding
-from .models import Ad, AdPolicy, AdTargeting
+from .models import Ad
 from .qdrant_service import create_collection, delete_collection, get_collection_info, upsert_ad
 
+# Default path to demo ads JSON (project root / data / test_ads.json)
+_DEFAULT_ADS_PATH = Path(__file__).resolve().parent.parent.parent / "data" / "test_ads.json"
 
-def create_sample_ads() -> None:
-    """Create and insert sample ads into the collection."""
-    sample_ads = [
-        Ad(
-            ad_id="sample-ad-001",
-            advertiser_id="sample-advertiser-tech",
-            title="Learn Python Today",
-            body="Master Python programming with our interactive courses. Build real-world projects and advance your career.",
-            cta_text="Start Learning",
-            landing_url="https://example.com/python",
-            targeting=AdTargeting(
-                topics=["programming", "python", "education", "technology"],
-                locale=["en-US"],
-                verticals=["education", "technology"],
-            ),
-            policy=AdPolicy(sensitive=False, age_restricted=False),
-        ),
-        Ad(
-            ad_id="sample-ad-002",
-            advertiser_id="sample-advertiser-edu",
-            title="Online Courses for Everyone",
-            body="Discover thousands of online courses in business, design, technology, and more. Learn at your own pace.",
-            cta_text="Browse Courses",
-            landing_url="https://example.com/courses",
-            targeting=AdTargeting(
-                topics=["education", "online learning", "courses", "skills"],
-                locale=["en-US"],
-                verticals=["education"],
-            ),
-            policy=AdPolicy(sensitive=False, age_restricted=False),
-        ),
-        Ad(
-            ad_id="sample-ad-003",
-            advertiser_id="sample-advertiser-shop",
-            title="Shop the Latest Trends",
-            body="Find amazing deals on fashion, electronics, home goods, and more. Free shipping on orders over $50.",
-            cta_text="Shop Now",
-            landing_url="https://example.com/shop",
-            targeting=AdTargeting(
-                topics=["shopping", "fashion", "deals", "e-commerce"],
-                locale=["en-US"],
-                verticals=["retail", "e-commerce"],
-            ),
-            policy=AdPolicy(sensitive=False, age_restricted=False),
-        ),
-        Ad(
-            ad_id="sample-ad-004",
-            advertiser_id="sample-advertiser-fitness",
-            title="Get Fit This Year",
-            body="Join thousands of members achieving their fitness goals. Personalized workout plans and nutrition guidance.",
-            cta_text="Start Free Trial",
-            landing_url="https://example.com/fitness",
-            targeting=AdTargeting(
-                topics=["fitness", "health", "workout", "wellness"],
-                locale=["en-US"],
-                verticals=["health", "fitness"],
-            ),
-            policy=AdPolicy(sensitive=False, age_restricted=False),
-        ),
-        Ad(
-            ad_id="sample-ad-005",
-            advertiser_id="sample-advertiser-finance",
-            title="Invest in Your Future",
-            body="Start investing with as little as $1. Build wealth with low-cost index funds and expert guidance.",
-            cta_text="Get Started",
-            landing_url="https://example.com/invest",
-            targeting=AdTargeting(
-                topics=["investing", "finance", "wealth", "savings"],
-                locale=["en-US"],
-                verticals=["finance"],
-            ),
-            policy=AdPolicy(sensitive=False, age_restricted=False),
-        ),
-    ]
 
-    print("Adding sample ads to collection...")
-    for ad in sample_ads:
+def load_ads_from_file(path: Path) -> list[Ad]:
+    """Load ads from a JSON file. Raises on missing file or invalid JSON/schema."""
+    if not path.exists():
+        print(f"Error: ads file not found: {path}", file=sys.stderr)
+        print("Create data/test_ads.json or pass --file <path>.", file=sys.stderr)
+        sys.exit(1)
+    with open(path, encoding="utf-8") as f:
+        raw = json.load(f)
+    if not isinstance(raw, list):
+        print("Error: JSON file must contain a list of ad objects.", file=sys.stderr)
+        sys.exit(1)
+    ads: list[Ad] = []
+    for i, item in enumerate(raw):
+        try:
+            ads.append(Ad.model_validate(item))
+        except Exception as e:
+            print(f"Error: invalid ad at index {i}: {e}", file=sys.stderr)
+            sys.exit(1)
+    return ads
+
+
+def seed_ads(file_path: Path | None = None) -> None:
+    """Load demo ads from a JSON file and upsert them into the collection."""
+    path = file_path if file_path is not None else _DEFAULT_ADS_PATH
+    ads = load_ads_from_file(path)
+    print(f"Adding {len(ads)} ads from {path}...")
+    for ad in ads:
         embedding = generate_embedding(ad.embedding_text)
         upsert_ad(ad, embedding)
         print(f"  Added: {ad.ad_id} - {ad.title}")
-    print(f"Successfully added {len(sample_ads)} sample ads.")
+    print(f"Successfully added {len(ads)} ads.")
 
 
 def main():
@@ -110,7 +66,13 @@ def main():
     subparsers.add_parser("info", help="Show collection information")
 
     # Seed command
-    subparsers.add_parser("seed", help="Add sample ads to the collection for testing")
+    seed_parser = subparsers.add_parser("seed", help="Load demo ads from a JSON file and add to the collection")
+    seed_parser.add_argument(
+        "--file",
+        type=Path,
+        default=None,
+        help=f"Path to JSON file with ads (default: {_DEFAULT_ADS_PATH})",
+    )
 
     args = parser.parse_args()
 
@@ -125,7 +87,7 @@ def main():
         print(f"Points count: {info['points_count']}")
         print(f"Indexed vectors count: {info['indexed_vectors_count']}")
     elif args.command == "seed":
-        create_sample_ads()
+        seed_ads(args.file)
     else:
         parser.print_help()
 

@@ -46,6 +46,66 @@ uv sync
 cp .env.example .env
 ```
 
+## Demo ads setup (step-by-step)
+
+Follow these steps in order to load demo ads and confirm everything works. Demo ads are defined in `data/test_ads.json`; re-running `seed` upserts them so the store matches the file.
+
+**Step 1.** Start Qdrant (in a terminal):
+
+```bash
+docker run -d --name qdrant \
+  -p 6333:6333 -p 6334:6334 \
+  qdrant/qdrant
+
+docker ps --filter name=qdrant
+```
+
+**Step 2.** In the project directory, install dependencies:
+
+```bash
+uv sync
+```
+
+**Step 3.** (Optional) Copy env:
+
+```bash
+cp .env.example .env
+```
+
+**Step 4.** Create the collection:
+
+```bash
+uv run ad-index create 
+```
+
+If it exists (uv run ad-index delete)
+
+**Step 5.** Load demo ads from the file:
+
+```bash
+uv run ad-index seed
+```
+
+To use a different file: `uv run ad-index seed --file path/to/ads.json`
+
+**Step 6.** Verify it worked:
+
+- Run:
+
+  ```bash
+  uv run ad-index info
+  ```
+
+  Confirm **Points count** is 5 (or the number of ads in your JSON file).
+
+- Optionally, query ads from Python to confirm they are being served:
+
+  ```bash
+  uv run python -c "from ad_injector.qdrant_service import match_ads; print(match_ads('python', top_k=2))"
+  ```
+
+  You should see matching ads (e.g. the Python/coding ad) in the output.
+
 ## Running with uv
 
 ### Run Scripts
@@ -68,7 +128,7 @@ uv run python -m ad_injector.cli create
 uv run python -m ad_injector.cli seed
 ```
 
-**Note**: The `seed` command adds 5 sample ads to the collection covering different topics (technology, education, e-commerce, fitness, and finance). This is useful for testing and demonstration purposes. Run `create` first to set up the collection, then `seed` to add test data.
+**Note**: The `seed` command loads demo ads from `data/test_ads.json` (or `--file <path>`) and upserts them into the collection. Run `create` first to set up the collection, then `seed` to load the test data.
 
 ### Add Dependencies
 

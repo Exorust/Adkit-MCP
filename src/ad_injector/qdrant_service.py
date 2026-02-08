@@ -1,17 +1,13 @@
 """Qdrant service for ad storage and retrieval."""
 
-import os
 import uuid
 from pathlib import Path
 
 from qdrant_client.models import Distance, PointStruct, VectorParams
 
-from .config import COLLECTION_NAME, EMBEDDING_DIMENSION, get_qdrant_client
+from .config import AD_ID_NAMESPACE, COLLECTION_NAME, EMBEDDING_DIMENSION, get_qdrant_client
 from .embedding_service import generate_embedding
 from .models import Ad
-
-# Namespace UUID for generating deterministic UUIDs from ad_id strings
-_AD_ID_NAMESPACE = uuid.UUID("a1b2c3d4-e5f6-7890-abcd-ef1234567890")
 
 # Debug log path - relative to workspace root
 _DEBUG_LOG_PATH = Path(__file__).parent.parent.parent / ".cursor" / "debug.log"
@@ -19,7 +15,7 @@ _DEBUG_LOG_PATH = Path(__file__).parent.parent.parent / ".cursor" / "debug.log"
 
 def _ad_id_to_uuid(ad_id: str) -> str:
     """Convert a string ad_id to a deterministic UUID string for Qdrant."""
-    return str(uuid.uuid5(_AD_ID_NAMESPACE, ad_id))
+    return str(uuid.uuid5(AD_ID_NAMESPACE, ad_id))
 
 
 def create_collection(dimension: int = EMBEDDING_DIMENSION) -> None:

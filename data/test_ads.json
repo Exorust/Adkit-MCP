@@ -1,0 +1,92 @@
+[
+  {
+    "ad_id": "sample-ad-001",
+    "advertiser_id": "sample-advertiser-tech",
+    "title": "Learn Python Today",
+    "body": "Master Python programming with our interactive courses. Build real-world projects and advance your career.",
+    "cta_text": "Start Learning",
+    "landing_url": "https://example.com/python",
+    "targeting": {
+      "topics": ["programming", "python", "education", "technology"],
+      "locale": ["en-US"],
+      "verticals": ["education", "technology"],
+      "blocked_keywords": []
+    },
+    "policy": {
+      "sensitive": false,
+      "age_restricted": false
+    }
+  },
+  {
+    "ad_id": "sample-ad-002",
+    "advertiser_id": "sample-advertiser-edu",
+    "title": "Online Courses for Everyone",
+    "body": "Discover thousands of online courses in business, design, technology, and more. Learn at your own pace.",
+    "cta_text": "Browse Courses",
+    "landing_url": "https://example.com/courses",
+    "targeting": {
+      "topics": ["education", "online learning", "courses", "skills"],
+      "locale": ["en-US"],
+      "verticals": ["education"],
+      "blocked_keywords": []
+    },
+    "policy": {
+      "sensitive": false,
+      "age_restricted": false
+    }
+  },
+  {
+    "ad_id": "sample-ad-003",
+    "advertiser_id": "sample-advertiser-shop",
+    "title": "Shop the Latest Trends",
+    "body": "Find amazing deals on fashion, electronics, home goods, and more. Free shipping on orders over $50.",
+    "cta_text": "Shop Now",
+    "landing_url": "https://example.com/shop",
+    "targeting": {
+      "topics": ["shopping", "fashion", "deals", "e-commerce"],
+      "locale": ["en-US"],
+      "verticals": ["retail", "e-commerce"],
+      "blocked_keywords": []
+    },
+    "policy": {
+      "sensitive": false,
+      "age_restricted": false
+    }
+  },
+  {
+    "ad_id": "sample-ad-004",
+    "advertiser_id": "sample-advertiser-fitness",
+    "title": "Get Fit This Year",
+    "body": "Join thousands of members achieving their fitness goals. Personalized workout plans and nutrition guidance.",
+    "cta_text": "Start Free Trial",
+    "landing_url": "https://example.com/fitness",
+    "targeting": {
+      "topics": ["fitness", "health", "workout", "wellness"],
+      "locale": ["en-US"],
+      "verticals": ["health", "fitness"],
+      "blocked_keywords": []
+    },
+    "policy": {
+      "sensitive": false,
+      "age_restricted": false
+    }
+  },
+  {
+    "ad_id": "sample-ad-005",
+    "advertiser_id": "sample-advertiser-finance",
+    "title": "Invest in Your Future",
+    "body": "Start investing with as little as $1. Build wealth with low-cost index funds and expert guidance.",
+    "cta_text": "Get Started",
+    "landing_url": "https://example.com/invest",
+    "targeting": {
+      "topics": ["investing", "finance", "wealth", "savings"],
+      "locale": ["en-US"],
+      "verticals": ["finance"],
+      "blocked_keywords": []
+    },
+    "policy": {
+      "sensitive": false,
+      "age_restricted": false
+    }
+  }
+]
