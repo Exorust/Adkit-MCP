@@ -10,7 +10,8 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from ..domain.filters import VectorFilter
+from ..domain.policy_engine import PolicyEngine
+from ..domain.targeting_engine import TargetingEngine
 from ..models.mcp_requests import MatchRequest
 from ..models.mcp_responses import AdCandidate, MatchResponse
 from ..ports.embedding import EmbeddingProvider
@@ -21,8 +22,6 @@ from ..ports.id_gen import (
     UuidRequestIdProvider,
 )
 from ..ports.vector_store import VectorHit, VectorStorePort
-from .policy_engine import PolicyEngine
-from .targeting_engine import TargetingEngine
 
 _WHITESPACE_RE = re.compile(r"\s+")
 
@@ -79,20 +78,26 @@ class MatchService:
             top_k=request.top_k,
         )
 
-        # 6. Policy: compute reason per hit for audit
+        # 6. Policy: apply post-retrieval filtering, then build decisions for audit
+        eligible = self._policy.apply(
+            raw_hits,
+            request.constraints,
+            request.placement,
+            context_text=request.context_text,
+        )
         decisions: list[dict[str, Any]] = []
-        eligible: list[VectorHit] = []
         for hit in raw_hits:
             reason = self._policy.reason(
-                hit, request.constraints, request.placement
+                hit,
+                request.constraints,
+                request.placement,
+                context_text=request.context_text,
             )
             decisions.append({
                 "ad_id": hit.ad_id,
                 "score": hit.score,
                 "reason": reason,
             })
-            if reason == "allowed":
-                eligible.append(hit)
 
         # 7. Convert to AdCandidates and assign match_id
         candidates: list[AdCandidate] = []

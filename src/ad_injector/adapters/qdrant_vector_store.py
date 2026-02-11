@@ -55,14 +55,14 @@ class QdrantVectorStore:
     def query(
         self,
         vector: list[float],
-        vector_filter: VectorFilter | None,
+        vector_filter: VectorFilter,
         top_k: int,
     ) -> list[VectorHit]:
         # Enforce max_top_k
         effective_k = min(top_k, self._settings.max_top_k)
 
         client = self._get_client()
-        qf = self._translate_filter(vector_filter) if vector_filter and not vector_filter.is_empty else None
+        qf = self._translate_filter(vector_filter)
         # Data Plane: only return enabled ads (exclude enabled=False; missing key treated as enabled)
         qf = self._ensure_enabled_filter(qf)
 
@@ -186,14 +186,17 @@ class QdrantVectorStore:
 
     def upsert_batch(self, ads_with_embeddings: list[tuple[Ad, list[float]]]) -> int:
         client = self._get_client()
-        points = [
-            PointStruct(
-                id=self._ad_id_to_uuid(ad.ad_id),
-                vector=embedding,
-                payload=ad.to_pinecone_metadata(),
+        points = []
+        for ad, embedding in ads_with_embeddings:
+            payload = dict(ad.to_pinecone_metadata())
+            payload["embedding_version"] = self._settings.embedding_model_id
+            points.append(
+                PointStruct(
+                    id=self._ad_id_to_uuid(ad.ad_id),
+                    vector=embedding,
+                    payload=payload,
+                )
             )
-            for ad, embedding in ads_with_embeddings
-        ]
         client.upsert(collection_name=self._collection, points=points)
         return len(points)
 

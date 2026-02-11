@@ -7,10 +7,10 @@ import uuid
 
 import pytest
 
-from ad_injector.services.match_service import MatchService
-from ad_injector.services.policy_engine import PolicyEngine
-from ad_injector.services.targeting_engine import TargetingEngine
 from ad_injector.domain.filters import VectorFilter
+from ad_injector.domain.policy_engine import PolicyEngine
+from ad_injector.domain.targeting_engine import TargetingEngine
+from ad_injector.services.match_service import MatchService
 from ad_injector.models.mcp_requests import (
     MatchConstraints,
     MatchRequest,
@@ -216,13 +216,38 @@ class TestPolicyFiltering:
         assert "ad-sens" in ids
 
     def test_blocked_keywords_removes_ad(self):
+        """Blocked keywords vs context_text: drop when intersect (token/substring)."""
         hits = [_make_hit("ad-ok", 0.9), _make_hit("ad-blocked", 0.8, blocked_keywords=["gambling"])]
         svc, _ = _build_service(hits)
-        req = _simple_request(constraints=MatchConstraints(topics=["gambling"]))
+        req = _simple_request(context_text="I want gambling tips")
         resp, _ = svc.match(req)
         ids = [c.ad_id for c in resp.candidates]
         assert "ad-blocked" not in ids
         assert "ad-ok" in ids
+
+
+# ---------------------------------------------------------------------------
+# Tests — engines always called
+# ---------------------------------------------------------------------------
+
+class TestEnginesCalled:
+    """TargetingEngine.build_filter and PolicyEngine.apply must be called."""
+
+    def test_targeting_engine_build_filter_called(self):
+        svc, store = _build_service()
+        svc.match(_simple_request())
+        assert "vector_filter" in store.last_query_args
+        assert isinstance(store.last_query_args["vector_filter"], VectorFilter)
+
+    def test_policy_applied_post_retrieval(self):
+        """Policy filters hits after retrieval even when vector filter is permissive."""
+        hits = [_make_hit("ad-ok", 0.9), _make_hit("ad-age", 0.8, age_restricted=True)]
+        svc, store = _build_service(hits)
+        resp, _ = svc.match(_simple_request())
+        # Vector store returned both; policy dropped age-restricted
+        assert len(store.hits) == 2
+        assert len(resp.candidates) == 1
+        assert resp.candidates[0].ad_id == "ad-ok"
 
 
 # ---------------------------------------------------------------------------

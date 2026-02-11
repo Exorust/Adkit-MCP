@@ -27,7 +27,7 @@ class VectorStorePort(Protocol):
     def query(
         self,
         vector: list[float],
-        vector_filter: VectorFilter | None,
+        vector_filter: VectorFilter,
         top_k: int,
     ) -> list[VectorHit]: ...
 

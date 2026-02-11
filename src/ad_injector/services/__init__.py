@@ -1,9 +1,9 @@
-"""Domain services: match, policy, targeting, index."""
+"""Services: match, index; engines in domain."""
 
+from ..domain.policy_engine import PolicyEngine
+from ..domain.targeting_engine import TargetingEngine
 from .index_service import IndexService
 from .match_service import MatchService
-from .policy_engine import PolicyEngine
-from .targeting_engine import TargetingEngine
 
 __all__ = [
     "IndexService",

@@ -1,4 +1,4 @@
-# Ad Injector
+# MCP AdKit
 
 Ad injection system with Qdrant vector storage for semantic ad matching.
 
