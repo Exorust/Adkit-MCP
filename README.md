@@ -1,6 +1,48 @@
-# MCP AdKit
+<div align="center">
+  <img src="Adkit.png" alt="AdKit Logo" width="120" height="120">
+  
+  <h1>AdKit</h1>
+  
+  <p>
+    <strong>A lightweight, semantic ad-serving engine for the Model Context Protocol (MCP).</strong>
+  </p>
 
-Ad injection system with Qdrant vector storage for semantic ad matching.
+  <p>
+    <a href="https://python.org">
+      <img src="https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white" alt="Python 3.10+">
+    </a>
+    <a href="./LICENSE">
+      <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License">
+    </a>
+    <img src="https://img.shields.io/badge/Architecture-Data%20%2F%20Control%20Plane-blueviolet" alt="Dual Plane Arch">
+    <img src="https://img.shields.io/badge/MCP-Compatible-orange" alt="MCP Compatible">
+  </p>
+
+  <p align="center">
+    🐦 <a href="https://twitter.com/charoori_ai">Follow Updates</a> •
+    📧 <a href="mailto:chandrahas.aroori@gmail.com?subject=AdKit">Contact & Feedback</a>
+  </p>
+
+  <p>
+    <a href="https://www.buymeacoffee.com/charoori_ai" target="_blank">
+      <img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="35">
+    </a>
+  </p>
+</div>
+<br/>
+
+
+
+A simple MCP Server that serves advertisements to LLMs! Use this to Inject Advertisements from your sponsors in your LLM. 
+
+
+## Where can you use this?
+- AI Agents & Assistants: Seamlessly inject relevant product recommendations or sponsored messages into chat interfaces (e.g., customer support bots, shopping assistants).
+
+- RAG (Retrieval-Augmented Generation) Pipelines: Serve "sponsored context" alongside organic retrieval results, allowing for high-relevance native advertising in search or Q&A tools.
+
+- Content Discovery Platforms: Power "You might also like" features or affiliate link insertion based on the semantic meaning of the content being consumed, rather than fragile keyword matching.
+
 
 ## Prerequisites
 
