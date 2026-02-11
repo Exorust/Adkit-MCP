@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="Adkit.png" alt="AdKit Logo" width="120" height="120">
+  <img src="Adkit.png" alt="AdKit Logo">
   
   <h1>AdKit</h1>
   
